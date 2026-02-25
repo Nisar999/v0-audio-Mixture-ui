@@ -6,28 +6,32 @@ import { MusicPlayer } from "./music-player"
 import { QueuePlaylist } from "./queue-playlist"
 import { VoiceFeedback } from "./voice-feedback"
 
-export function AirDJDashboard() {
+interface SpotifyAuraDashboardProps {
+  isEntering?: boolean
+}
+
+export function SpotifyAuraDashboard({ isEntering = false }: SpotifyAuraDashboardProps) {
   return (
-    <div className="flex flex-col h-screen bg-background overflow-hidden">
+    <div
+      className={`flex flex-col h-screen bg-background overflow-hidden transition-all duration-700 ease-out ${
+        isEntering ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"
+      }`}
+    >
       <Navbar />
 
-      <main className="flex-1 flex flex-col lg:flex-row gap-4 p-4 min-h-0 overflow-y-auto lg:overflow-hidden">
-        {/* Left side - Camera feed (70%) */}
-        <section className="lg:w-[70%] flex-shrink-0 min-h-[400px] lg:min-h-0 lg:h-full">
+      <main className="flex-1 flex flex-col lg:flex-row gap-2 p-2 min-h-0 overflow-y-auto lg:overflow-hidden">
+        {/* Left column - Camera feed (65%) */}
+        <section className="lg:w-[65%] flex-shrink-0 min-h-[400px] lg:min-h-0 lg:h-full">
           <GestureCamera />
         </section>
 
-        {/* Right side - Player + Queue + Voice (30%) */}
-        <aside className="lg:w-[30%] flex flex-col gap-4 min-h-0 lg:overflow-y-auto pb-4 lg:pb-0 scrollbar-thin">
+        {/* Right column - Player + Queue + Voice (35%) */}
+        <aside className="lg:w-[35%] flex flex-col gap-2 min-h-0 lg:overflow-y-auto pb-4 lg:pb-0 scrollbar-thin">
           <MusicPlayer />
           <QueuePlaylist />
           <VoiceFeedback />
         </aside>
       </main>
-
-      {/* Ambient glow effects */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="fixed bottom-0 right-0 w-64 h-64 bg-primary/3 rounded-full blur-3xl pointer-events-none" />
     </div>
   )
 }
