@@ -6,9 +6,17 @@ import { MusicPlayer } from "./music-player"
 import { QueuePlaylist } from "./queue-playlist"
 import { VoiceFeedback } from "./voice-feedback"
 
-export function AirDJDashboard() {
+interface AirDJDashboardProps {
+  isEntering?: boolean
+}
+
+export function AirDJDashboard({ isEntering = false }: AirDJDashboardProps) {
   return (
-    <div className="flex flex-col h-screen bg-background overflow-hidden">
+    <div
+      className={`flex flex-col h-screen bg-background overflow-hidden transition-all duration-700 ease-out ${
+        isEntering ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"
+      }`}
+    >
       <Navbar />
 
       <main className="flex-1 flex flex-col lg:flex-row gap-2 p-2 min-h-0 overflow-y-auto lg:overflow-hidden">
