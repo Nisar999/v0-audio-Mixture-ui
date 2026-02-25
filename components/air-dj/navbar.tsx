@@ -2,6 +2,7 @@
 
 import { User } from "lucide-react"
 import { SpotifyAuraLogo } from "./spotify-aura-logo"
+import { ThemeToggle } from "./theme-toggle"
 
 export function Navbar() {
   return (
@@ -17,13 +18,16 @@ export function Navbar() {
         </span>
       </div>
 
-      {/* Profile */}
-      <button
-        className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center hover:bg-border transition-colors"
-        aria-label="User profile"
-      >
-        <User className="h-4 w-4 text-muted-foreground" />
-      </button>
+      {/* Right actions */}
+      <div className="flex items-center gap-2">
+        <ThemeToggle />
+        <button
+          className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center hover:bg-border transition-colors"
+          aria-label="User profile"
+        >
+          <User className="h-4 w-4 text-muted-foreground" />
+        </button>
+      </div>
     </nav>
   )
 }

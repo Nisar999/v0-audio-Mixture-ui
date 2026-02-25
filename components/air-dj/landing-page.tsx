@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Hand, Mic, Zap, ChevronRight } from "lucide-react"
 import { SpotifyAuraLogo } from "./spotify-aura-logo"
+import { ThemeToggle } from "./theme-toggle"
 
 const FEATURES = [
   {
@@ -40,8 +41,13 @@ export function LandingPage({ onLaunch }: LandingPageProps) {
         isExiting ? "opacity-0 scale-105" : "opacity-100 scale-100"
       }`}
     >
+      {/* Theme toggle in top right */}
+      <div className="absolute top-4 right-4 z-20">
+        <ThemeToggle />
+      </div>
+
       {/* Background subtle gradient */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_#1DB95410_0%,_transparent_70%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_#1DB95408_0%,_transparent_70%)] dark:bg-[radial-gradient(ellipse_at_center,_#1DB95410_0%,_transparent_70%)]" />
 
       <div className="relative z-10 flex flex-col items-center gap-10 px-6 max-w-2xl text-center">
         {/* Logo */}

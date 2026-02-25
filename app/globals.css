@@ -4,6 +4,42 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  --background: #FFFFFF;
+  --foreground: #191414;
+  --card: #F5F5F5;
+  --card-foreground: #191414;
+  --popover: #FFFFFF;
+  --popover-foreground: #191414;
+  --primary: #1DB954;
+  --primary-foreground: #FFFFFF;
+  --secondary: #EBEBEB;
+  --secondary-foreground: #191414;
+  --muted: #EBEBEB;
+  --muted-foreground: #6A6A6A;
+  --accent: #1DB954;
+  --accent-foreground: #FFFFFF;
+  --destructive: #e91429;
+  --destructive-foreground: #FFFFFF;
+  --border: #E0E0E0;
+  --input: #E0E0E0;
+  --ring: #1DB954;
+  --chart-1: #1DB954;
+  --chart-2: #1ed760;
+  --chart-3: #169c46;
+  --chart-4: #14833b;
+  --chart-5: #1fdf64;
+  --radius: 0.5rem;
+  --sidebar: #F5F5F5;
+  --sidebar-foreground: #191414;
+  --sidebar-primary: #1DB954;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #EBEBEB;
+  --sidebar-accent-foreground: #191414;
+  --sidebar-border: #E0E0E0;
+  --sidebar-ring: #1DB954;
+}
+
+.dark {
   --background: #121212;
   --foreground: #FFFFFF;
   --card: #181818;
@@ -97,9 +133,10 @@
   background: transparent;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: hsla(0, 0%, 100%, 0.3);
+  background: var(--muted-foreground);
+  opacity: 0.3;
   border-radius: 9999px;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: hsla(0, 0%, 100%, 0.5);
+  opacity: 0.5;
 }
