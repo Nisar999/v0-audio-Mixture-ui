@@ -6,8 +6,8 @@ import './globals.css'
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: 'AIR DJ - Gesture & Voice Controlled Spotify Player',
-  description: 'Control your Spotify playback with hand gestures and voice commands. A futuristic music experience.',
+  title: 'Spotify Air DJ - Gesture & Voice Controlled Player',
+  description: 'Control your Spotify playback with hand gestures and voice commands.',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#0d1117',
+  themeColor: '#121212',
   userScalable: false,
 }
 

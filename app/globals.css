@@ -4,38 +4,38 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #0d1117;
-  --foreground: #e6edf3;
-  --card: #161b22;
-  --card-foreground: #e6edf3;
-  --popover: #161b22;
-  --popover-foreground: #e6edf3;
+  --background: #121212;
+  --foreground: #FFFFFF;
+  --card: #181818;
+  --card-foreground: #FFFFFF;
+  --popover: #242424;
+  --popover-foreground: #FFFFFF;
   --primary: #1DB954;
-  --primary-foreground: #0d1117;
-  --secondary: #1c2333;
-  --secondary-foreground: #e6edf3;
-  --muted: #1c2333;
-  --muted-foreground: #7d8590;
+  --primary-foreground: #000000;
+  --secondary: #242424;
+  --secondary-foreground: #FFFFFF;
+  --muted: #242424;
+  --muted-foreground: #B3B3B3;
   --accent: #1DB954;
-  --accent-foreground: #0d1117;
-  --destructive: #f85149;
-  --destructive-foreground: #e6edf3;
-  --border: #30363d;
-  --input: #30363d;
+  --accent-foreground: #000000;
+  --destructive: #e91429;
+  --destructive-foreground: #FFFFFF;
+  --border: #2A2A2A;
+  --input: #2A2A2A;
   --ring: #1DB954;
   --chart-1: #1DB954;
-  --chart-2: #238636;
-  --chart-3: #1a7f37;
-  --chart-4: #2ea043;
-  --chart-5: #56d364;
-  --radius: 0.75rem;
-  --sidebar: #0d1117;
-  --sidebar-foreground: #e6edf3;
+  --chart-2: #1ed760;
+  --chart-3: #169c46;
+  --chart-4: #14833b;
+  --chart-5: #1fdf64;
+  --radius: 0.5rem;
+  --sidebar: #000000;
+  --sidebar-foreground: #FFFFFF;
   --sidebar-primary: #1DB954;
-  --sidebar-primary-foreground: #0d1117;
-  --sidebar-accent: #1c2333;
-  --sidebar-accent-foreground: #e6edf3;
-  --sidebar-border: #30363d;
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: #242424;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #2A2A2A;
   --sidebar-ring: #1DB954;
 }
 
@@ -91,15 +91,15 @@
 
 /* Custom scrollbar */
 .scrollbar-thin::-webkit-scrollbar {
-  width: 4px;
+  width: 8px;
 }
 .scrollbar-thin::-webkit-scrollbar-track {
   background: transparent;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #30363d;
+  background: hsla(0, 0%, 100%, 0.3);
   border-radius: 9999px;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #484f58;
+  background: hsla(0, 0%, 100%, 0.5);
 }
