@@ -88,7 +88,7 @@ export function GestureCamera() {
       <div className="flex items-center gap-3 px-5 py-3 border-t border-border">
         <Mic className="h-4 w-4 text-primary" />
         <span className="text-sm text-muted-foreground">
-          {'Wake word: '}<span className="text-foreground font-medium">{'"Hey Air DJ"'}</span>
+          {'Wake word: '}<span className="text-foreground font-medium">{'"Aura"'}</span>
         </span>
       </div>
     </div>

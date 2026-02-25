@@ -6,11 +6,11 @@ import { MusicPlayer } from "./music-player"
 import { QueuePlaylist } from "./queue-playlist"
 import { VoiceFeedback } from "./voice-feedback"
 
-interface AirDJDashboardProps {
+interface SpotifyAuraDashboardProps {
   isEntering?: boolean
 }
 
-export function AirDJDashboard({ isEntering = false }: AirDJDashboardProps) {
+export function SpotifyAuraDashboard({ isEntering = false }: SpotifyAuraDashboardProps) {
   return (
     <div
       className={`flex flex-col h-screen bg-background overflow-hidden transition-all duration-700 ease-out ${

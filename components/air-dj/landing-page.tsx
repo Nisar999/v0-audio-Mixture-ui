@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Hand, Mic, Music2, Zap, ChevronRight } from "lucide-react"
+import { Hand, Mic, Zap, ChevronRight } from "lucide-react"
+import { SpotifyAuraLogo } from "./spotify-aura-logo"
 
 const FEATURES = [
   {
@@ -12,7 +13,7 @@ const FEATURES = [
   {
     icon: Mic,
     title: "Voice Commands",
-    description: "Say the word and your DJ obeys. Skip, shuffle, or queue up.",
+    description: "Say \"Aura\" and your assistant obeys. Skip, shuffle, or queue up.",
   },
   {
     icon: Zap,
@@ -44,15 +45,7 @@ export function LandingPage({ onLaunch }: LandingPageProps) {
 
       <div className="relative z-10 flex flex-col items-center gap-10 px-6 max-w-2xl text-center">
         {/* Logo */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center h-12 w-12 rounded-full bg-primary">
-            <Music2 className="h-6 w-6 text-primary-foreground" />
-          </div>
-          <div className="flex flex-col items-start">
-            <span className="text-2xl font-bold tracking-tight text-foreground">Air DJ</span>
-            <span className="text-xs text-muted-foreground -mt-1">powered by AWS</span>
-          </div>
-        </div>
+        <SpotifyAuraLogo size="lg" />
 
         {/* Headline */}
         <div className="flex flex-col gap-3">
@@ -62,7 +55,7 @@ export function LandingPage({ onLaunch }: LandingPageProps) {
             <span className="text-primary">voice</span>
           </h1>
           <p className="text-base sm:text-lg text-muted-foreground text-pretty max-w-lg mx-auto">
-            Your camera becomes your controller. Wave to skip, pinch to adjust volume, or just ask your Air DJ.
+            Your camera becomes your controller. Wave to skip, pinch to adjust volume, or just say &quot;Aura&quot;.
           </p>
         </div>
 

@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { LandingPage } from "@/components/air-dj/landing-page"
-import { AirDJDashboard } from "@/components/air-dj/dashboard"
+import { SpotifyAuraDashboard } from "@/components/air-dj/dashboard"
 
 export default function Page() {
   const [showDashboard, setShowDashboard] = useState(false)
@@ -22,5 +22,5 @@ export default function Page() {
     return <LandingPage onLaunch={handleLaunch} />
   }
 
-  return <AirDJDashboard isEntering={dashboardEntering} />
+  return <SpotifyAuraDashboard isEntering={dashboardEntering} />
 }
