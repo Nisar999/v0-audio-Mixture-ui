@@ -20,7 +20,7 @@ export function SpotifyAuraLogo({ className = "", size = "md" }: SpotifyAuraLogo
   const dimensions = {
     sm: { width: 170, height: 45 },
     md: { width: 240, height: 64 },
-    lg: { width: 300, height: 80 },
+    lg: { width: 340, height: 80 },
   }
 
   const { width, height } = dimensions[size]
@@ -32,7 +32,7 @@ export function SpotifyAuraLogo({ className = "", size = "md" }: SpotifyAuraLogo
     <svg
       width={width}
       height={height}
-      viewBox="0 0 300 80"
+      viewBox="0 0 170 80"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       role="img"

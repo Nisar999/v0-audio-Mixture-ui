@@ -51,7 +51,9 @@ export function LandingPage({ onLaunch }: LandingPageProps) {
 
       <div className="relative z-10 flex flex-col items-center gap-10 px-6 max-w-2xl text-center">
         {/* Logo */}
-        <SpotifyAuraLogo size="lg" />
+        <div className="flex items-center justify-center w-full">
+          <SpotifyAuraLogo size="lg" />
+        </div>
 
         {/* Headline */}
         <div className="flex flex-col gap-3">
@@ -99,6 +101,29 @@ export function LandingPage({ onLaunch }: LandingPageProps) {
         <p className="text-xs text-muted-foreground">
           Camera and microphone access required
         </p>
+
+        {/* Fueled by AWS */}
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <span>Fueled by</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 80 28"
+            className="h-5 w-auto"
+            role="img"
+            aria-label="AWS"
+          >
+            <text
+              x="0"
+              y="22"
+              fontFamily="Inter, Arial, sans-serif"
+              fontSize="24"
+              fontWeight="700"
+              fill="#FF9900"
+            >
+              AWS
+            </text>
+          </svg>
+        </div>
       </div>
     </div>
   )
