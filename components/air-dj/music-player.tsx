@@ -50,6 +50,7 @@ export function MusicPlayer() {
           src="/images/album-cover.jpg"
           alt={`${currentTrack.title} album cover`}
           fill
+          priority
           className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
