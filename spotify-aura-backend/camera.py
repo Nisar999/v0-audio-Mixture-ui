@@ -88,3 +88,6 @@ def generate_frames():
                    b'Content-Type: image/jpeg\r\n\r\n' +
                    frame_bytes +
                    b'\r\n')
+                   
+        # CRITICAL: Yield to the event loop so FastAPI doesn't freeze
+        time.sleep(0.03)

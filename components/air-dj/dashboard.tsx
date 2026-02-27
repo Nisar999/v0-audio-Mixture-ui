@@ -29,11 +29,11 @@ export function SpotifyAuraDashboard({ isEntering = false }: SpotifyAuraDashboar
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
-      recognition.interimResults = false;
       recognition.lang = 'en-US';
 
       recognition.onresult = (event: any) => {
         const current = event.resultIndex;
+        if (!event.results[current].isFinal) return; // Only process final clauses
         const transcript = event.results[current][0].transcript.toLowerCase().trim();
 
         console.log("Heard:", transcript);
@@ -53,10 +53,12 @@ export function SpotifyAuraDashboard({ isEntering = false }: SpotifyAuraDashboar
       recognition.onerror = (event: any) => {
         console.log("Speech recognition error", event.error);
         try {
-          // Restart immediately on no-speech errors
+          // Restart on non-fatal errors
           if (event.error === 'no-speech' || event.error === 'network') {
             recognition.stop();
-            setTimeout(() => recognition.start(), 100);
+            setTimeout(() => {
+              try { recognition.start(); } catch (e) { }
+            }, 300);
           }
         } catch (e) { }
       };

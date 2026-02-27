@@ -17,11 +17,6 @@ def detect_gesture(hand_landmarks):
     """
     global wrist_history, last_swipe_time
     
-    # MediaPipe landmarks map (0-20)
-    # 0: WRIST, 4: THUMB_TIP, 8: INDEX_FINGER_TIP, 12: MIDDLE_FINGER_TIP
-    # 16: RING_FINGER_TIP, 20: PINKY_TIP
-    # 5, 9, 13, 17 are the MCP joints (knuckles at the base of the fingers)
-    
     lm = hand_landmarks.landmark
     
     # 1. Update wrist history for swipe detection
@@ -57,31 +52,30 @@ def detect_gesture(hand_landmarks):
     # Thumb relies on x-coords relative to hand direction, but distance to wrist vs IP works well enough
     thumb_ext = calculate_distance(lm[4], lm[0]) > calculate_distance(lm[3], lm[0])
     
+    raw_gesture = None
+    
     # 2. Check for Fist (all fingers folded)
     if not index_ext and not middle_ext and not ring_ext and not pinky_ext and not thumb_ext:
-        return "fist"
+        raw_gesture = "fist"
             
     # 3. Check for Thumbs Up (only thumb extended)
-    if thumb_ext and not index_ext and not middle_ext and not ring_ext and not pinky_ext:
-        return "thumbs_up"
+    elif thumb_ext and not index_ext and not middle_ext and not ring_ext and not pinky_ext:
+        raw_gesture = "thumbs_up"
         
-    # 4. Check for Pinch (Thumb and Index tips close, others folded or extended doesn't matter as much)
+    # 4. Check for Pinch
     pinch_distance = calculate_distance(lm[4], lm[8])
-    # Also check that distance from thumb/index to wrist is relatively high, so it's not a fist
     if pinch_distance < 0.05 and not index_ext and not middle_ext: 
-        # Actually pinching implies thumb and index are somewhat extended to touch each other, 
-        # but let's just rely on tip distance being very small.
-        # However, in a fist, thumb and index might be close. Let's make sure it's an "Open" pinch.
         pass
         
     if pinch_distance < 0.06 and middle_ext and ring_ext and pinky_ext:
-        return "pinch" # OK gesture / Pinch
+        raw_gesture = "pinch"
 
     # 5. Check for Open Palm (all fingers extended)
-    if index_ext and middle_ext and ring_ext and pinky_ext and thumb_ext:
-        return "open_palm"
+    elif index_ext and middle_ext and ring_ext and pinky_ext and thumb_ext:
+        raw_gesture = "open_palm"
 
-    return None
+    return raw_gesture
+
 
 def process_gesture(gesture_name):
     """Maps the detected physical gesture to a system action"""
