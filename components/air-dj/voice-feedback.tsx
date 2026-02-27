@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react"
 import { MessageSquare, Music, Plus, Check, Hand, Volume2, SkipForward, Pause } from "lucide-react"
 
+import { api } from "@/lib/api"
+
 type FeedbackEntry = {
   text: string
   icon: typeof MessageSquare
@@ -10,40 +12,65 @@ type FeedbackEntry = {
   type: "voice" | "gesture"
 }
 
-const INITIAL_ENTRIES: FeedbackEntry[] = [
-  { text: "Playing Blinding Lights", icon: Music, time: "just now", type: "voice" },
-  { text: "Swipe Right -- Next Track", icon: SkipForward, time: "2s ago", type: "gesture" },
-  { text: "Added Levitating to queue", icon: Plus, time: "5s ago", type: "voice" },
-  { text: "Palm Open -- Pause", icon: Pause, time: "8s ago", type: "gesture" },
-]
-
-const NEW_ENTRIES: FeedbackEntry[] = [
-  { text: "Pinch In -- Volume Down", icon: Volume2, time: "just now", type: "gesture" },
-  { text: "Playing Levitating", icon: Music, time: "just now", type: "voice" },
-  { text: "Swipe Left -- Previous Track", icon: SkipForward, time: "just now", type: "gesture" },
-  { text: "Shuffling playlist", icon: Check, time: "just now", type: "voice" },
-  { text: "Thumbs Up -- Like Track", icon: Check, time: "just now", type: "gesture" },
-  { text: "Volume decreased to 60%", icon: Volume2, time: "just now", type: "voice" },
-  { text: "Fist -- Play", icon: Music, time: "just now", type: "gesture" },
-  { text: "Added Heat Waves to queue", icon: Plus, time: "just now", type: "voice" },
-]
+// Helper to map text to icons
+function getIconForText(text: string) {
+  const lower = text.toLowerCase()
+  if (lower.includes('play') || lower.includes('music')) return Music
+  if (lower.includes('pause')) return Pause
+  if (lower.includes('next') || lower.includes('previous') || lower.includes('skip') || lower.includes('swipe')) return SkipForward
+  if (lower.includes('queue')) return Plus
+  if (lower.includes('volume')) return Volume2
+  if (lower.includes('like')) return Check
+  return MessageSquare
+}
 
 export function VoiceFeedback() {
-  const [entries, setEntries] = useState<FeedbackEntry[]>(INITIAL_ENTRIES)
+  const [entries, setEntries] = useState<FeedbackEntry[]>([])
   const [newIndex, setNewIndex] = useState(-1)
+  const [filter, setFilter] = useState<"all" | "gesture" | "voice">("all")
 
   useEffect(() => {
-    let index = 0
-    const interval = setInterval(() => {
-      setNewIndex(0)
-      setEntries((prev) => {
-        const entry = NEW_ENTRIES[index % NEW_ENTRIES.length]
-        return [entry, ...prev.slice(0, 4)]
-      })
-      index++
-      setTimeout(() => setNewIndex(-1), 400)
-    }, 3500)
+    const pollBackend = async () => {
+      try {
+        const result = await api.pollEvents();
+        if (result && result.events && result.events.length > 0) {
 
+          const newFormattedEvents = result.events.map((ev: any) => ({
+            text: ev.text,
+            icon: getIconForText(ev.text),
+            time: ev.time,
+            type: ev.type as "voice" | "gesture"
+          }));
+
+          setEntries(prev => {
+            // Check if there's actually a new event pushed to avoid unnecessary re-renders
+            if (prev.length > 0 && newFormattedEvents[0] && prev[0].text === newFormattedEvents[0].text && prev[0].type === newFormattedEvents[0].type) {
+              return prev;
+            }
+
+            // If the latest event changed, animate the flash
+            if (newFormattedEvents.length > 0) {
+              setNewIndex(0);
+              setTimeout(() => setNewIndex(-1), 1000);
+            }
+
+            // Combine new events with previous unique ones
+            const combined = [...newFormattedEvents, ...prev];
+            // Filter unique
+            const unique = Array.from(new Set(combined.map(a => a.text)))
+              .map(text => {
+                return combined.find(a => a.text === text)
+              })
+
+            return (unique as FeedbackEntry[]).slice(0, 8);
+          });
+        }
+      } catch (err) {
+        console.warn("Could not fetch events");
+      }
+    };
+
+    const interval = setInterval(pollBackend, 1500)
     return () => clearInterval(interval)
   }, [])
 
@@ -79,23 +106,20 @@ export function VoiceFeedback() {
           return (
             <div
               key={`${entry.text}-${entry.type}-${i}`}
-              className={`flex items-center gap-3 px-5 py-2.5 transition-all duration-300 ${
-                i === newIndex ? "bg-secondary" : ""
-              }`}
+              className={`flex items-center gap-3 px-5 py-2.5 transition-all duration-300 ${i === newIndex ? "bg-secondary" : ""
+                }`}
             >
               <div
-                className={`flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center ${
-                  entry.type === "gesture"
+                className={`flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center ${entry.type === "gesture"
                     ? "bg-primary/15"
                     : "bg-secondary"
-                }`}
+                  }`}
               >
                 <Icon
-                  className={`h-4 w-4 ${
-                    entry.type === "gesture"
+                  className={`h-4 w-4 ${entry.type === "gesture"
                       ? "text-primary"
                       : "text-muted-foreground"
-                  }`}
+                    }`}
                 />
               </div>
               <div className="min-w-0 flex-1">
@@ -104,9 +128,8 @@ export function VoiceFeedback() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span
-                    className={`text-[10px] font-medium uppercase tracking-wide ${
-                      entry.type === "gesture" ? "text-primary" : "text-muted-foreground"
-                    }`}
+                    className={`text-[10px] font-medium uppercase tracking-wide ${entry.type === "gesture" ? "text-primary" : "text-muted-foreground"
+                      }`}
                   >
                     {entry.type}
                   </span>
