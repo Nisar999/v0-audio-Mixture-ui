@@ -31,6 +31,8 @@ def handle_spotify_action(action_name):
         spotify.previous_track()
     elif action_name == "volume_down":
         spotify.set_volume_down()
+    elif action_name == "volume_up":
+        spotify.set_volume_up()
     # 'Like' functionality is complex in Spotify API without full scopes, so we just log it as an event for now
 
 def generate_frames():
@@ -49,9 +51,12 @@ def generate_frames():
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             results = hands.process(rgb_frame)
             
-            if results.multi_hand_landmarks and results.multi_handedness:
+            if results.multi_hand_landmarks:
                 for idx, hand_landmarks in enumerate(results.multi_hand_landmarks):
-                    handedness = results.multi_handedness[idx].classification[0].label
+                    handedness = "Right"
+                    if results.multi_handedness and idx < len(results.multi_handedness):
+                        handedness = results.multi_handedness[idx].classification[0].label
+                        
                     mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
                     
                     detected_gesture = gesture.detect_gesture(hand_landmarks, handedness)

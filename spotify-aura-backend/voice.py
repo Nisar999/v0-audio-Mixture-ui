@@ -23,5 +23,8 @@ def process_voice(command):
 
     if "volume" in command and "down" in command:
         return {"action": "volume_down"}
+        
+    if "volume" in command and "up" in command:
+        return {"action": "volume_up"}
 
     return {"action": "none"}

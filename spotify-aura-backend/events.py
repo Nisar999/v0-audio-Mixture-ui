@@ -15,6 +15,7 @@ def add_event(gesture_name, action_name):
         "swipe_left": "Swipe Left -- Previous",
         "swipe_right": "Swipe Right -- Next",
         "pinch": "Pinch -- Volume Down",
+        "open_palm": "Open Palm -- Volume Up",
         "voice_play": f"Playing {action_name}",
         "voice_queue": f"Added {action_name} to queue"
     }

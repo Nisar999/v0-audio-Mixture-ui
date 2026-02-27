@@ -89,7 +89,8 @@ def process_gesture(gesture_name):
         "swipe_left": "previous",
         "swipe_right": "next",
         "thumbs_up": "like",
-        "pinch": "volume_down"
+        "pinch": "volume_down",
+        "open_palm": "volume_up"
     }
     
     action = action_map.get(gesture_name, "none")

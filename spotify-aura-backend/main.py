@@ -144,6 +144,11 @@ def voice_command(command: str):
             spotify.set_volume_down()
             events.add_event("voice_volume", "Volume Decreased")
             return {"status": "volume_down"}
+            
+        if result["action"] == "volume_up":
+            spotify.set_volume_up()
+            events.add_event("voice_volume", "Volume Increased")
+            return {"status": "volume_up"}
 
         return result
     except HTTPException:
