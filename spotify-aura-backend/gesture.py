@@ -3,14 +3,17 @@ from collections import deque
 import time
 
 # Keep track of the wrist's X-coordinate history for swipe detection
-wrist_history = deque(maxlen=10)
+wrist_history = {
+    "Left": deque(maxlen=10),
+    "Right": deque(maxlen=10)
+}
 last_swipe_time = 0
 
 def calculate_distance(p1, p2):
     """Calculate Euclidean distance between two landmarks (with x, y attributes)"""
     return math.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2)
 
-def detect_gesture(hand_landmarks):
+def detect_gesture(hand_landmarks, handedness="Right"):
     """
     Analyzes MediaPipe hand landmarks and returns a detected gesture string.
     Returns: 'fist', 'thumbs_up', 'pinch', 'swipe_left', 'swipe_right', 'open_palm', or None
@@ -22,12 +25,14 @@ def detect_gesture(hand_landmarks):
     # 1. Update wrist history for swipe detection
     current_time = time.time()
     wrist_x = lm[0].x
-    wrist_history.append(wrist_x)
+    
+    history = wrist_history.get(handedness, wrist_history["Right"])
+    history.append(wrist_x)
     
     # Check for swipe (cooldown of 1.5 seconds)
-    if current_time - last_swipe_time > 1.5 and len(wrist_history) == wrist_history.maxlen:
-        start_x = wrist_history[0]
-        end_x = wrist_history[-1]
+    if current_time - last_swipe_time > 1.5 and len(history) == history.maxlen:
+        start_x = history[0]
+        end_x = history[-1]
         delta = end_x - start_x
         
         # Note: x coordinates go from 0 (left) to 1 (right) on the image
@@ -67,7 +72,7 @@ def detect_gesture(hand_landmarks):
     if pinch_distance < 0.05 and not index_ext and not middle_ext: 
         pass
         
-    if pinch_distance < 0.06 and middle_ext and ring_ext and pinky_ext:
+    if pinch_distance < 0.10 and middle_ext and ring_ext and pinky_ext:
         raw_gesture = "pinch"
 
     # 5. Check for Open Palm (all fingers extended)

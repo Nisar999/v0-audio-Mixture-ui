@@ -9,7 +9,7 @@ import spotify
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands(
     static_image_mode=False,
-    max_num_hands=1,
+    max_num_hands=2,
     min_detection_confidence=0.7,
     min_tracking_confidence=0.5
 )
@@ -49,11 +49,12 @@ def generate_frames():
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             results = hands.process(rgb_frame)
             
-            if results.multi_hand_landmarks:
-                for hand_landmarks in results.multi_hand_landmarks:
+            if results.multi_hand_landmarks and results.multi_handedness:
+                for idx, hand_landmarks in enumerate(results.multi_hand_landmarks):
+                    handedness = results.multi_handedness[idx].classification[0].label
                     mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
                     
-                    detected_gesture = gesture.detect_gesture(hand_landmarks)
+                    detected_gesture = gesture.detect_gesture(hand_landmarks, handedness)
                     current_time = time.time()
                     
                     if detected_gesture:

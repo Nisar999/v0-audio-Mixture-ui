@@ -126,7 +126,10 @@ def set_volume_down():
         refresh_token_if_needed()
         current = sp.current_playback()
         if current and current.get('device'):
-            vol = max(0, current['device']['volume_percent'] - 10)
+            vol_percent = current['device'].get('volume_percent')
+            if vol_percent is None:
+                return {"error": "Volume control is disabled on this device type (e.g. Mobile/TV)"}
+            vol = max(0, vol_percent - 10)
             sp.volume(vol)
             return {"status": f"volume_{vol}"}
         return {"error": "no active device"}
