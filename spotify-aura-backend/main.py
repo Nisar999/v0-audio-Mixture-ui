@@ -45,6 +45,11 @@ def get_live_events():
     """Returns real-time AI gestures and voice commands to the frontend dashboard"""
     return {"events": events.get_events()}
 
+@app.get("/current_playback")
+def current_playback():
+    """Returns the user's real-time Spotify playing state for the UI Player"""
+    return spotify.get_current_playback()
+
 
 @app.post("/play")
 
@@ -102,6 +107,8 @@ def voice_command(command: str):
                     raise HTTPException(status_code=404, detail=f"Song '{result['song']}' not found")
                 else:
                     raise HTTPException(status_code=500, detail=play_result["error"])
+            
+            events.add_event("voice_play", result["song"].strip())
             return play_result
 
         if result["action"] == "queue":
@@ -113,7 +120,25 @@ def voice_command(command: str):
                     raise HTTPException(status_code=404, detail=f"Song '{result['song']}' not found")
                 else:
                     raise HTTPException(status_code=500, detail=queue_result["error"])
+            
+            events.add_event("voice_queue", result["song"].strip())
             return queue_result
+
+        # Handle simple system commands
+        if result["action"] in ["pause", "stop"]:
+            spotify.pause_playback()
+            events.add_event("voice_pause", "Playback Paused")
+            return {"status": "paused"}
+            
+        if result["action"] == "skip":
+            spotify.next_track()
+            events.add_event("voice_skip", "Skipped Track")
+            return {"status": "skipped"}
+            
+        if result["action"] == "volume_down":
+            spotify.set_volume_down()
+            events.add_event("voice_volume", "Volume Decreased")
+            return {"status": "volume_down"}
 
         return result
     except HTTPException:

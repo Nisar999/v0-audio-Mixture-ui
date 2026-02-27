@@ -32,6 +32,30 @@ def refresh_token_if_needed():
         token_info = auth_manager.refresh_access_token(token_info['refresh_token'])
     return token_info
 
+def get_current_playback():
+    """Fetch the real-time currently playing track info and progress"""
+    try:
+        refresh_token_if_needed()
+        current = sp.current_playback()
+        
+        if not current or not current.get('item'):
+            return {"status": "none", "is_playing": False}
+            
+        track = current['item']
+        
+        return {
+            "status": "active",
+            "is_playing": current['is_playing'],
+            "progress_ms": current['progress_ms'],
+            "duration_ms": track['duration_ms'],
+            "title": track['name'],
+            "artist": ", ".join([artist['name'] for artist in track['artists']]),
+            "album_art": track['album']['images'][0]['url'] if track['album']['images'] else None,
+            "device_volume": current['device']['volume_percent'] if current.get('device') else 100
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
 def play_song(song_name):
     """Play a song by name, with automatic token refresh"""
     try:

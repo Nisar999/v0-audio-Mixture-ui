@@ -69,6 +69,16 @@ export const api = {
     }
   },
 
+  // Get current real Spotify playback
+  async getCurrentPlayback() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/current_playback`);
+      return await response.json();
+    } catch {
+      return { status: "none", is_playing: false };
+    }
+  },
+
 
   // Check backend status
   async checkBackendStatus() {

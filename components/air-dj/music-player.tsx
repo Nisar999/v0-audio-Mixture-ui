@@ -9,126 +9,112 @@ import {
   Shuffle,
   Repeat,
   Volume2,
-  ExternalLink,
 } from "lucide-react"
 import Image from "next/image"
 import { api } from "@/lib/api"
 
-const TRACKS = [
-  { title: "Blinding Lights", artist: "The Weeknd", duration: 200 },
-  { title: "Levitating", artist: "Dua Lipa", duration: 203 },
-  { title: "Stay", artist: "The Kid LAROI, Justin Bieber", duration: 141 },
-  { title: "Heat Waves", artist: "Glass Animals", duration: 238 },
-  { title: "As It Was", artist: "Harry Styles", duration: 167 },
-]
-
 export function MusicPlayer() {
-  const [isPlaying, setIsPlaying] = useState(true)
-  const [currentTrackIndex, setCurrentTrackIndex] = useState(0)
-  const [progress, setProgress] = useState(42)
-  const [volume, setVolume] = useState(75)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [progress, setProgress] = useState(0)
+  const [duration, setDuration] = useState(0)
+  const [volume, setVolume] = useState(100)
   const [shuffle, setShuffle] = useState(false)
   const [repeat, setRepeat] = useState(false)
   const [backendConnected, setBackendConnected] = useState(false)
 
-  const currentTrack = TRACKS[currentTrackIndex]
+  // Real tracker states
+  const [title, setTitle] = useState("No track playing")
+  const [artist, setArtist] = useState("Unknown Artist")
+  const [albumArt, setAlbumArt] = useState("/images/album-cover.jpg")
+  const [hasActiveDevice, setHasActiveDevice] = useState(false)
 
   useEffect(() => {
     // Check backend connection
     api.checkBackendStatus().then(result => {
       setBackendConnected(!result.error);
     });
+
+    const fetchPlayback = async () => {
+      const data = await api.getCurrentPlayback();
+      if (data && data.status === "active") {
+        setHasActiveDevice(true);
+        setIsPlaying(data.is_playing);
+        setTitle(data.title);
+        setArtist(data.artist);
+        setProgress(data.progress_ms);
+        setDuration(data.duration_ms);
+        setVolume(data.device_volume);
+        if (data.album_art) {
+          setAlbumArt(data.album_art);
+        }
+      } else {
+        setHasActiveDevice(false);
+        setIsPlaying(false);
+      }
+    };
+
+    fetchPlayback();
+    const interval = setInterval(fetchPlayback, 1000);
+    return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    if (!isPlaying) return
-    const interval = setInterval(() => {
-      setProgress((p) => {
-        if (p >= 100) {
-          setCurrentTrackIndex((i) => (i + 1) % TRACKS.length)
-          return 0
-        }
-        return p + 0.5
-      })
-    }, 1000)
-    return () => clearInterval(interval)
-  }, [isPlaying])
-
-  const formatTime = (seconds: number) => {
-    const m = Math.floor(seconds / 60)
-    const s = Math.floor(seconds % 60)
-    return `${m}:${s.toString().padStart(2, "0")}`
+  const formatTime = (ms: number) => {
+    const totalSeconds = Math.floor(ms / 1000);
+    const m = Math.floor(totalSeconds / 60);
+    const s = Math.floor(totalSeconds % 60);
+    return `${m}:${s.toString().padStart(2, "0")}`;
   }
-
-  const currentTime = (progress / 100) * currentTrack.duration
 
   const handlePlay = async () => {
     if (backendConnected) {
-      const result = await api.playSong(currentTrack.title);
-      console.log('Play result:', result);
-      if (!result.error) {
-        setIsPlaying(true);
-      }
-    } else {
-      setIsPlaying(!isPlaying);
+      setIsPlaying(!isPlaying); // Optimistic UI
+      await api.sendVoiceCommand(isPlaying ? "pause" : "play");
     }
   }
 
   const handleNext = async () => {
-    const nextIndex = (currentTrackIndex + 1) % TRACKS.length;
-    setCurrentTrackIndex(nextIndex);
-    setProgress(0);
-
     if (backendConnected) {
-      const result = await api.playSong(TRACKS[nextIndex].title);
-      console.log('Next track result:', result);
+      await api.sendVoiceCommand("skip");
     }
   }
 
   const handlePrevious = async () => {
-    const prevIndex = (currentTrackIndex - 1 + TRACKS.length) % TRACKS.length;
-    setCurrentTrackIndex(prevIndex);
-    setProgress(0);
-
     if (backendConnected) {
-      const result = await api.playSong(TRACKS[prevIndex].title);
-      console.log('Previous track result:', result);
+      // Send physical gesture string mapped to previous
+      await api.sendGesture("swipe_left");
     }
   }
 
   const handleAddToQueue = async () => {
     if (backendConnected) {
-      const result = await api.addToQueue(currentTrack.title);
-      console.log('Queue result:', result);
+      await api.addToQueue(title);
     }
   }
 
+  const progressPercent = duration > 0 ? (progress / duration) * 100 : 0;
+
   return (
     <div className="flex flex-col rounded-lg bg-card overflow-hidden">
-
-
       {/* Album art */}
       <div className="w-full px-4 pt-4">
-        <div className="relative w-full rounded-md overflow-hidden">
+        <div className="relative w-full rounded-md overflow-hidden aspect-square">
           <Image
-            src="/images/album-cover.jpg"
-            alt={`${currentTrack.title} album cover`}
-            width={400}
-            height={400}
-            priority
-            className="w-full h-auto object-cover rounded-md"
+            src={albumArt}
+            alt={`${title} album cover`}
+            fill
+            className="w-full h-full object-cover rounded-md"
           />
         </div>
       </div>
 
       {/* Track info */}
       <div className="px-4 pt-4 pb-1">
-        <h3 className="text-base font-bold text-foreground truncate">{currentTrack.title}</h3>
-        <p className="text-sm text-muted-foreground truncate">{currentTrack.artist}</p>
+        <h3 className="text-base font-bold text-foreground truncate">{title}</h3>
+        <p className="text-sm text-muted-foreground truncate">{artist}</p>
         <div className="flex items-center gap-2 mt-1">
           <div className={`w-2 h-2 rounded-full ${backendConnected ? 'bg-green-500' : 'bg-red-500'}`} />
           <span className="text-xs text-muted-foreground">
-            {backendConnected ? 'Backend Connected' : 'Backend Disconnected'}
+            {backendConnected ? (hasActiveDevice ? 'Spotify Connected' : 'No Active Spotify Device') : 'Backend Disconnected'}
           </span>
         </div>
       </div>
@@ -136,20 +122,17 @@ export function MusicPlayer() {
       {/* Progress bar */}
       <div className="px-4 pt-2 pb-1">
         <div
-          className="relative h-1 w-full rounded-full bg-border overflow-hidden cursor-pointer group"
+          className="relative h-1 w-full rounded-full bg-border overflow-hidden group"
           role="progressbar"
-          aria-valuenow={progress}
-          aria-valuemin={0}
-          aria-valuemax={100}
         >
           <div
-            className="h-full rounded-full bg-foreground group-hover:bg-primary transition-colors duration-200"
-            style={{ width: `${progress}%` }}
+            className="h-full rounded-full bg-foreground transition-all duration-1000 ease-linear"
+            style={{ width: `${progressPercent}%` }}
           />
         </div>
         <div className="flex items-center justify-between mt-1.5">
-          <span className="text-[11px] text-muted-foreground font-medium">{formatTime(currentTime)}</span>
-          <span className="text-[11px] text-muted-foreground font-medium">{formatTime(currentTrack.duration)}</span>
+          <span className="text-[11px] text-muted-foreground font-medium">{formatTime(progress)}</span>
+          <span className="text-[11px] text-muted-foreground font-medium">{formatTime(duration)}</span>
         </div>
       </div>
 
@@ -196,8 +179,8 @@ export function MusicPlayer() {
       <div className="px-4 pb-2">
         <button
           onClick={handleAddToQueue}
-          disabled={!backendConnected}
-          className={`w-full px-4 py-2 text-sm font-medium rounded-md transition-colors ${backendConnected
+          disabled={!backendConnected || !hasActiveDevice}
+          className={`w-full px-4 py-2 text-sm font-medium rounded-md transition-colors ${backendConnected && hasActiveDevice
             ? 'bg-secondary hover:bg-secondary/80 text-foreground'
             : 'bg-gray-400 text-gray-600 cursor-not-allowed'
             }`}
@@ -210,15 +193,11 @@ export function MusicPlayer() {
       <div className="flex items-center gap-2 px-4 pb-4 pt-1">
         <Volume2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
         <div
-          className="relative h-1 w-full rounded-full bg-border overflow-hidden cursor-pointer group"
+          className="relative h-1 w-full rounded-full bg-border overflow-hidden group"
           role="slider"
-          aria-valuenow={volume}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-label="Volume"
         >
           <div
-            className="h-full rounded-full bg-foreground group-hover:bg-primary transition-colors duration-200"
+            className="h-full rounded-full bg-foreground group-hover:bg-primary transition-all duration-500"
             style={{ width: `${volume}%` }}
           />
         </div>
