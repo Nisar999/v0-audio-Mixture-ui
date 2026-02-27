@@ -39,11 +39,11 @@ def detect_gesture(hand_landmarks, handedness="Right"):
         # If the user moves their hand left, delta is negative
         if delta < -0.15: 
             last_swipe_time = current_time
-            wrist_history.clear()
+            history.clear()
             return "swipe_left"
         elif delta > 0.15:
             last_swipe_time = current_time
-            wrist_history.clear()
+            history.clear()
             return "swipe_right"
 
     def is_finger_extended(tip_idx, pip_idx):
