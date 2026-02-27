@@ -60,19 +60,25 @@ def generate_frames():
                         # Draw gesture text on screen
                         cv2.putText(frame, detected_gesture.upper(), (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
                         
-                        # Process action if cooldown has passed or gesture changed
-                        if (current_time - last_action_time) > COOLDOWN_SECONDS or detected_gesture != last_gesture:
-                            system_action = gesture.process_gesture(detected_gesture)
-                            action_name = system_action["action"]
-                            
-                            if action_name != "none":
-                                # 1. Trigger Spotify
-                                handle_spotify_action(action_name)
-                                # 2. Push event to dashboard
-                                events.add_event(detected_gesture, action_name)
+                        # Process action ONLY if the physical gesture has changed state
+                        if detected_gesture != last_gesture:
+                            if (current_time - last_action_time) > COOLDOWN_SECONDS:
+                                system_action = gesture.process_gesture(detected_gesture)
+                                action_name = system_action["action"]
                                 
-                                last_action_time = current_time
-                                last_gesture = detected_gesture
+                                if action_name != "none":
+                                    # 1. Trigger Spotify
+                                    handle_spotify_action(action_name)
+                                    # 2. Push event to dashboard
+                                    events.add_event(detected_gesture, action_name)
+                                    
+                                    last_action_time = current_time
+                                    
+                            # Always update the tracking state so holding a fist doesn't spam the API
+                            last_gesture = detected_gesture
+                    else:
+                        # If hand returns to open palm/unrecognized, reset the gesture lock
+                        last_gesture = None
 
         # Encode and stream frame
         ret, buffer = cv2.imencode('.jpg', frame)

@@ -112,9 +112,9 @@ export function MusicPlayer() {
         <h3 className="text-base font-bold text-foreground truncate">{title}</h3>
         <p className="text-sm text-muted-foreground truncate">{artist}</p>
         <div className="flex items-center gap-2 mt-1">
-          <div className={`w-2 h-2 rounded-full ${backendConnected ? 'bg-green-500' : 'bg-red-500'}`} />
+          <div className={`w-2 h-2 rounded-full ${backendConnected ? (hasActiveDevice ? 'bg-green-500' : 'bg-yellow-500') : 'bg-red-500'}`} />
           <span className="text-xs text-muted-foreground">
-            {backendConnected ? (hasActiveDevice ? 'Spotify Connected' : 'No Active Spotify Device') : 'Backend Disconnected'}
+            {backendConnected ? (hasActiveDevice ? 'Spotify Connected' : 'Waiting: Please open Spotify on your device') : 'Backend Disconnected'}
           </span>
         </div>
       </div>
@@ -182,10 +182,10 @@ export function MusicPlayer() {
           disabled={!backendConnected || !hasActiveDevice}
           className={`w-full px-4 py-2 text-sm font-medium rounded-md transition-colors ${backendConnected && hasActiveDevice
             ? 'bg-secondary hover:bg-secondary/80 text-foreground'
-            : 'bg-gray-400 text-gray-600 cursor-not-allowed'
+            : 'bg-gray-400 text-gray-800 cursor-not-allowed'
             }`}
         >
-          Add to Queue
+          {hasActiveDevice ? "Add to Queue" : "Open Spotify App to Enable"}
         </button>
       </div>
 
