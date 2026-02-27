@@ -40,11 +40,9 @@ export function SpotifyAuraDashboard({ isEntering = false }: SpotifyAuraDashboar
 
         // Wake word detection
         if (transcript.includes("aura")) {
-          let command = "";
-          if (transcript.includes("play")) command = "play";
-          else if (transcript.includes("pause") || transcript.includes("stop")) command = "pause";
-          else if (transcript.includes("skip") || transcript.includes("next")) command = "skip";
-          else if (transcript.includes("volume") && transcript.includes("down")) command = "volume_down";
+          // Extract the full command spoken after "Aura"
+          const parts = transcript.split("aura");
+          const command = parts[parts.length - 1].trim();
 
           if (command) {
             api.sendVoiceCommand(command);

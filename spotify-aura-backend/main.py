@@ -135,6 +135,11 @@ def voice_command(command: str):
             events.add_event("voice_skip", "Skipped Track")
             return {"status": "skipped"}
             
+        if result["action"] == "previous":
+            spotify.previous_track()
+            events.add_event("voice_previous", "Previous Track")
+            return {"status": "previous"}
+            
         if result["action"] == "volume_down":
             spotify.set_volume_down()
             events.add_event("voice_volume", "Volume Decreased")

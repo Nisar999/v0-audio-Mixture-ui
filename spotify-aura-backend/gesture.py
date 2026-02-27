@@ -46,32 +46,39 @@ def detect_gesture(hand_landmarks):
             wrist_history.clear()
             return "swipe_right"
 
-    # For static gestures, we define "folded" if the tip's Y is lower down the screen (higher Y value) than the MCP joint
-    # Note: Y goes from 0 (top) to 1 (bottom)
-    index_folded = lm[8].y > lm[5].y
-    middle_folded = lm[12].y > lm[9].y
-    ring_folded = lm[16].y > lm[13].y
-    pinky_folded = lm[20].y > lm[17].y
+    def is_finger_extended(tip_idx, pip_idx):
+        return calculate_distance(lm[tip_idx], lm[0]) > calculate_distance(lm[pip_idx], lm[0])
+
+    index_ext = is_finger_extended(8, 6)
+    middle_ext = is_finger_extended(12, 10)
+    ring_ext = is_finger_extended(16, 14)
+    pinky_ext = is_finger_extended(20, 18)
     
-    thumb_straight_up = lm[4].y < lm[3].y < lm[2].y
+    # Thumb relies on x-coords relative to hand direction, but distance to wrist vs IP works well enough
+    thumb_ext = calculate_distance(lm[4], lm[0]) > calculate_distance(lm[3], lm[0])
     
-    # 2. Check for Fist 
-    if index_folded and middle_folded and ring_folded and pinky_folded:
-        if not thumb_straight_up: # If thumb is up, it's a thumbs up, not a fist
-            return "fist"
+    # 2. Check for Fist (all fingers folded)
+    if not index_ext and not middle_ext and not ring_ext and not pinky_ext and not thumb_ext:
+        return "fist"
             
-    # 3. Check for Thumbs Up
-    if thumb_straight_up and index_folded and middle_folded and ring_folded and pinky_folded:
+    # 3. Check for Thumbs Up (only thumb extended)
+    if thumb_ext and not index_ext and not middle_ext and not ring_ext and not pinky_ext:
         return "thumbs_up"
         
-    # 4. Check for Pinch (Thumb and Index tips are close together)
+    # 4. Check for Pinch (Thumb and Index tips close, others folded or extended doesn't matter as much)
     pinch_distance = calculate_distance(lm[4], lm[8])
-    if pinch_distance < 0.05:
-        # Ensure other fingers are relatively open or not strictly important, but let's just trigger on pinch_distance
-        return "pinch"
+    # Also check that distance from thumb/index to wrist is relatively high, so it's not a fist
+    if pinch_distance < 0.05 and not index_ext and not middle_ext: 
+        # Actually pinching implies thumb and index are somewhat extended to touch each other, 
+        # but let's just rely on tip distance being very small.
+        # However, in a fist, thumb and index might be close. Let's make sure it's an "Open" pinch.
+        pass
         
-    # 5. Check for Open Palm (all fingers extended up)
-    if not index_folded and not middle_folded and not ring_folded and not pinky_folded:
+    if pinch_distance < 0.06 and middle_ext and ring_ext and pinky_ext:
+        return "pinch" # OK gesture / Pinch
+
+    # 5. Check for Open Palm (all fingers extended)
+    if index_ext and middle_ext and ring_ext and pinky_ext and thumb_ext:
         return "open_palm"
 
     return None
